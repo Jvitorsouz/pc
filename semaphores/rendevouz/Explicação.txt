@@ -1,0 +1,23 @@
+No Rendevouz temos uma dependência entre duas theards, ou seja, uma instrução de uma thread A só pode ser execultada depois de um instrução da thread B e vice versa
+
+Problema:
+
+Thread A       Thread B
+instrução a1   instrução b1
+instrução a2   instrução b2
+
+Restrição => b2 só pode execultar depois de que a1 tenha sido execultado e a2
+só pode ser execultado deppois que b1 tenha sido execultado.
+
+SOLUÇÃO:
+É necessário usar dois semaforos para essa solução, ambos inicializados em zero;
+
+Semaphore semaforoA = new Semaphore(0);
+Semaphore semaforoB = new Semaphore(0);
+
+Thread A             Thread B
+instrução a1         instrução b1
+semaforoA.signal()   semaforoB.signal()
+semaforoB.wait()     semaforoA.wait()
+instrução a2         instrução b2
+
