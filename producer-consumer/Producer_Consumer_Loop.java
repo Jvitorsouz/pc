@@ -1,18 +1,24 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Semaphore;
 import java.util.Random;
+import java.util.concurrent.Semaphore;
 
-public class Main{
-
+public class Producer_Consumer_Loop {
 
     static final Semaphore mutex = new Semaphore(1);
     static final Semaphore prodSem = new Semaphore(0);
     static final Semaphore conSem = new Semaphore(10); //O semaforo é iniciado com a quantidade limite de objetos no buffer
     public static void main(String[] args) {
-        
-        List<Integer> Buffer = new ArrayList<>();
+
+        List<Integer> buffer = new ArrayList<>();
         Random random = new Random();
+
+
+        Thread producer = new Thread(new Producer(buffer, random));
+        Thread consumer = new Thread(new Consumer(buffer));
+
+        producer.start();
+        consumer.start();
     }
 
     public static class Producer implements Runnable {
@@ -26,11 +32,20 @@ public class Main{
         }
 
         public void add () throws InterruptedException {
-            conSem.acquire();
-            mutex.acquire();
-            buffer.add(this.random.nextInt(100));
-            mutex.release();
-            prodSem.release();
+            while (true){
+                int item = random.nextInt(100);
+
+                conSem.acquire(); // Caso o buffer esteja cheio
+                mutex.acquire();
+                buffer.add(item);
+                System.out.println( "Produzido: " + item);
+                mutex.release();
+                prodSem.release();
+
+                Thread.sleep(500);
+
+            }
+
 
         }
 
@@ -52,15 +67,19 @@ public class Main{
             this.buffer = buffer;
         }
 
-        public int get () throws InterruptedException {
-            //
-            prodSem.acquire();
-            mutex.acquire();
-            int data = buffer.remove(0);
-            mutex.release();
-            conSem.release();
+        public void get () throws InterruptedException {
 
-            return data;
+            while (true){
+                prodSem.acquire(); //Caso o buffer esteja vazio
+                mutex.acquire();
+                int data = buffer.remove(0);
+                System.out.println( "Consumido: " + data);
+                mutex.release();
+                conSem.release();
+                Thread.sleep(800);
+
+            }
+
         }
 
 
