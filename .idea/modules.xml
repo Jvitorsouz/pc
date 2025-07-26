@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Lab4/src/concurrent/concurrent.iml" filepath="$PROJECT_DIR$/Lab4/src/concurrent/concurrent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lab1/lab1.iml" filepath="$PROJECT_DIR$/lab1/lab1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lab2/lab2.iml" filepath="$PROJECT_DIR$/lab2/lab2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pc.iml" filepath="$PROJECT_DIR$/pc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/semaphores/semaphores.iml" filepath="$PROJECT_DIR$/semaphores/semaphores.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Lab4/src/serial/serial.iml" filepath="$PROJECT_DIR$/Lab4/src/serial/serial.iml" />
+    </modules>
+  </component>
+</project>
