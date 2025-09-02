@@ -25,16 +25,5 @@ public class ThreadSafeCounter {
         return counter.get();
     }
 
-    public boolean addIfPositive(int value){
-        while (true) {
-            int current = counter.get();
-            if(current < 0) return false;
-            int soma_l = current + value;
-
-            if(counter.compareAndSet(current, soma_l)){
-                return true;
-            }
-
-        }
-    }
+   
 }
