@@ -3,21 +3,22 @@ import java.util.concurrent.Semaphore;
 
 public class BlockingRateLimiting{
 
-    static final Semaphore[] type = {new Semaphore(0), new Semaphore(0)};
+    static Semaphore multiplex = new Semaphore(3);
+    static Semaphore mutex = new Semaphore(1);
+    static Semaphore wait = new Semaphore(0);
     static int currentType = 0;
-    static int currentCount = 0;
+    static Integer[] currentRunning = {0,0};
+
 
     public static void main(String[] args) throws InterruptedException {
 
-        Semaphore multiplex = new Semaphore(3);
-        Semaphore mutex = new Semaphore(1);
 
-        Thread[] threads = new Thread[10];
+        Thread[] threads = new Thread[30];
 
-        for(int i=0; i<10; i++){
+        for(int i=0; i<30; i++){
             Thread t = new Thread(() -> {
                 Request req = new Request();
-                handle(req, multiplex, mutex);
+                handle(req);
 
             });
             threads[i] = t; 
@@ -30,26 +31,47 @@ public class BlockingRateLimiting{
         
     }
 
-    static void handle (Request req, Semaphore multiplex, Semaphore mutex){
+
+    //USANDO READ-WRITE PARA RESOLVER
+    static void handle (Request req){
         try {
-            //DEFINIÇÃO DO TIPO CASO SEJA O PRIMEIRO
+
+            //Caso seja o primeiro a execultar define o tipo da execução
             mutex.acquire();
-            if(currentType == 0 ){
+            if(currentType == 0){
                 currentType = req.getType();
             }
             mutex.release();
-
+            
             if(currentType != req.getType()){
-                type[currentType-1].acquire();
+                wait.acquire();
             }
-
+       
+            //LIMITANDO A QUANTIDADE DE EXECUÇÃO DE EXEC
             multiplex.acquire();
+            //INCREMENTAR QUANDO ESTIVER EXECULTANDO
+
             mutex.acquire();
-            currentCount++;
+            currentRunning[currentType-1]++;
+            mutex.release();
+
+            //REGIAO CRITICA
             exec(req);
+
+            mutex.acquire();
+            currentRunning[currentType-1]--;
             mutex.release();
             multiplex.release();
-            type[currentType-1].release();
+
+            //Caso não haja mais ninguem do tipo execultando
+            mutex.acquire();
+            if(currentRunning[currentType-1] == 0){
+                currentType = 0;
+            }
+            wait.release();
+            mutex.release();
+
+
         } catch (InterruptedException ex) {
         }
 
