@@ -20,7 +20,7 @@ public class Barrier{
             Thread.currentThread().interrupt();
         }
         this.count++;
-        System.out.println("INICIO DA THREAD " + this.count);
+        //System.out.println("INICIO DA THREAD " + this.count);
         mutex.release();
 
         if(count == n){
@@ -34,7 +34,7 @@ public class Barrier{
         }
         //this.count--;
         cart.release();
-        System.out.println("FIM DA THREAD " + this.count);
+        //System.out.println("FIM DA THREAD " + this.count);
 
     }
 }
